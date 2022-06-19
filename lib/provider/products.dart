@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:shop_app/provider/product.dart';
+import 'package:collection/collection.dart';
 
 class Products with ChangeNotifier {
   final List<Product> _items = [
@@ -42,14 +43,48 @@ class Products with ChangeNotifier {
   }
 
   Product findById(String id) {
+    var found = Product(
+        id: "null", title: "", description: "", price: -1, imageUrl: "");
+    bool flag = false;
+    _items.forEach((element) {
+      if (element.id == id) {
+        flag = true;
+      }
+    });
+    if (flag == false) {
+      return found;
+    }
     return _items.firstWhere((element) => element.id == id);
   }
 
-  void addProduct() {
+  void addProduct(Product product) {
+    final newProduct = Product(
+      id: DateTime.now().toString(),
+      title: product.title,
+      description: product.description,
+      price: product.price,
+      imageUrl: product.imageUrl,
+    );
+    _items.add(newProduct);
     notifyListeners();
   }
 
   List<Product> get FavItems {
     return _items.where((element) => element.isFavourite).toList();
+  }
+
+  updateProduct(String id, Product newProduct) {
+    final prodIndex = _items.indexWhere((prod) => prod.id == id);
+    if (prodIndex >= 0) {
+      _items[prodIndex] = newProduct;
+      notifyListeners();
+    } else {
+      print('invalid update index!,i m  in products');
+    }
+  }
+
+  deleteProducts(String id) {
+    _items.removeWhere((prod) => prod.id == id);
+    notifyListeners();
   }
 }

@@ -4,6 +4,7 @@ import 'package:shop_app/screens/product_detail_screen.dart';
 import 'package:shop_app/widgets/badge.dart';
 import '../provider/cart.dart';
 import '../provider/product.dart';
+import 'package:favorite_button/favorite_button.dart';
 
 class ProductItem extends StatelessWidget {
   // final String id;
@@ -38,14 +39,12 @@ class ProductItem extends StatelessWidget {
             ),
             backgroundColor: Colors.black54,
             leading: Consumer<Product>(
-              builder: (ctx, product, child) => IconButton(
-                icon: Icon(product.isFavourite
-                    ? Icons.favorite
-                    : Icons.favorite_border),
-                color: Colors.redAccent,
-                onPressed: () {
+              builder: (ctx, product, child) => FavoriteButton(
+                isFavorite: product.isFavourite ? true : false,
+                valueChanged: (_) {
                   product.toggleFavouriteStatus();
                 },
+                iconSize: 40,
               ),
             ),
             trailing: Badge(

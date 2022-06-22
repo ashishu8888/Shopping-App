@@ -5,7 +5,6 @@ import 'package:shop_app/screens/cart_screen.dart';
 import 'package:shop_app/widgets/app_drawer.dart';
 import 'package:shop_app/widgets/badge.dart';
 import 'package:shop_app/widgets/productsGrid.dart';
-
 import '../provider/cart.dart';
 
 enum FilterOptions { Favourite, All }
@@ -21,6 +20,34 @@ class _ProductOverViewScreenState extends State<ProductOverViewScreen> {
   bool _isFav = false;
 
   @override
+  void initState() {
+    // Provider.of<Products>(context).fetchANDSetProduct(); // won't work.
+    //one hack...
+    // Future.delayed(Duration.zero).then((_) {
+    //   Provider.of<Products>(context).fetchANDSetProduct();
+    // });
+    super.initState();
+  }
+
+  bool _isInit = true;
+  bool _isLoading = false;
+  @override
+  void didChangeDependencies() async {
+    if (_isInit) {
+      setState(() {
+        _isLoading = true;
+      });
+      final response =
+          await Provider.of<Products>(context).fetchANDSetProduct();
+      setState(() {
+        _isLoading = false;
+      });
+    }
+    _isInit = false;
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final productContainer = Provider.of<Products>(context);
     return Scaffold(
@@ -29,7 +56,6 @@ class _ProductOverViewScreenState extends State<ProductOverViewScreen> {
           actions: [
             PopupMenuButton(
                 onSelected: (FilterOptions selectedValue) {
-                  //...
                   if (selectedValue == FilterOptions.Favourite) {
                     showFav();
                   } else {
@@ -65,7 +91,11 @@ class _ProductOverViewScreenState extends State<ProductOverViewScreen> {
           ],
         ),
         drawer: const AppDrawer(),
-        body: ProductsGrid(_isFav));
+        body: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : ProductsGrid(_isFav));
   }
 
   showFav() {

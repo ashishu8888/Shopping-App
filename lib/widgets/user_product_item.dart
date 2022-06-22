@@ -14,6 +14,7 @@ class UserProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     return ListTile(
       title: Text(title),
       leading: CircleAvatar(
@@ -24,8 +25,8 @@ class UserProductItem extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
+            const SizedBox(
+              width: 100,
             ),
             IconButton(
               onPressed: () {
@@ -36,9 +37,16 @@ class UserProductItem extends StatelessWidget {
               color: Theme.of(context).primaryColor,
             ),
             IconButton(
-              onPressed: () {
-                Provider.of<Products>(context, listen: false)
-                    .deleteProducts(id);
+              onPressed: () async {
+                try {
+                  await Provider.of<Products>(context, listen: false)
+                      .deleteProducts(id);
+                } catch (error) {
+                  // bcoz it a async(future) and will not give
+                  // garrentue of context so i use din this way.
+                  scaffoldMessenger.showSnackBar(
+                      const SnackBar(content: Text('Deleting Faliled!')));
+                }
               },
               icon: const Icon(Icons.delete),
               color: Theme.of(context).errorColor,

@@ -46,12 +46,14 @@ class CartScreen extends StatelessWidget {
                   ),
                   FlatButton(
                     child: const Text('Order Now'),
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed(OrderConfirmationScreen.routeName);
-                    },
+                    onPressed: cart.totalAmount <= 0
+                        ? null
+                        : () {
+                            Navigator.of(context)
+                                .pushNamed(OrderConfirmationScreen.routeName);
+                          },
                     textColor: Theme.of(context).primaryColor,
-                  )
+                  ),
                 ]),
           ),
         ),

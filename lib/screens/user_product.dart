@@ -8,6 +8,10 @@ class UserProductScreen extends StatelessWidget {
   static const routeName = '/UserProductScreen';
   const UserProductScreen({Key? key}) : super(key: key);
 
+  Future<void> _refreshProducts(BuildContext context) async {
+    await Provider.of<Products>(context, listen: false).fetchANDSetProduct();
+  }
+
   @override
   Widget build(BuildContext context) {
     final productData = Provider.of<Products>(context);
@@ -23,25 +27,30 @@ class UserProductScreen extends StatelessWidget {
           )
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          itemBuilder: (_, i) {
-            return Column(
-              children: [
-                UserProductItem(
-                  id: productData.items[i].id,
-                  title: productData.items[i].title,
-                  imageUrl: productData.items[i].imageUrl,
-                ),
-                const Divider(
-                  indent: 40,
-                  endIndent: 40,
-                ),
-              ],
-            );
-          },
-          itemCount: productData.items.length,
+      body: RefreshIndicator(
+        onRefresh: () {
+          return _refreshProducts(context);
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView.builder(
+            itemBuilder: (_, i) {
+              return Column(
+                children: [
+                  UserProductItem(
+                    id: productData.items[i].id,
+                    title: productData.items[i].title,
+                    imageUrl: productData.items[i].imageUrl,
+                  ),
+                  const Divider(
+                    indent: 40,
+                    endIndent: 40,
+                  ),
+                ],
+              );
+            },
+            itemCount: productData.items.length,
+          ),
         ),
       ),
     );
